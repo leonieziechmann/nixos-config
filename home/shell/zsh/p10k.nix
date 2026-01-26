@@ -1,4 +1,6 @@
 { config, lib, ... }: {
+  imports = [ ./zinit.nix ];
+
   options = {
     zsh.enableP10k = lib.mkEnableOption "use the p10k zsh theme";
     zsh.p10kInstantPrompt = lib.mkEnableOption "instant prompt";
@@ -7,9 +9,13 @@
   config = lib.mkMerge [ 
     (lib.mkIf config.zsh.enableP10k {
       programs.zsh = {
-        antidote.plugins = ["romkatv/powerlevel10k"];
+        zinit.plugins = [
+          {
+            name = "romkatv/powerlevel10k";
+            ice = "depth=1";
+          }
+        ];
         initExtra = ''
-          # Powerlevel10k prompt
           [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
         '';
       };
