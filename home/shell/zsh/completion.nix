@@ -1,4 +1,4 @@
-{ config, lib, ... }: {
+{ config, lib, pkgs, ... }: {
   imports = [ ./zinit.nix ];
 
   options = {
@@ -9,11 +9,15 @@
     programs.zsh = {
       zinit.plugins = [
         {
-          name = "zsh-users/zsh-completions";
+          name = "zsh-completions";
+          src = pkgs.zsh-completions;
+          dir = "share/zsh-completions";
           ice = "wait'0' lucid atpull'zinit creinstall -q'";
         }
         {
-          name = "zsh-users/zsh-autosuggestions";
+          name = "zsh-autosuggestions";
+          src = pkgs.zsh-autosuggestions;
+          dir = "share/zsh-autosuggestions";
           ice = "wait'0' lucid atpull'zinit creinstall -q'";
         }
       ];

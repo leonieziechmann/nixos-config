@@ -3,25 +3,35 @@ let
   cfg = config.programs.zsh.zinit;
 
   zinitPluginStr = plugin:
-    if builtins.isString plugin then
-      "zinit light {$plugin}"
-    else
-      let
-        loadType = if plugin.snippet != null then "snippet" else "light";
-        target = if plugin.snippet != null then plugin.snippet else plugin.name;
+    let
+      isLocal = plugin.src != null;
+      localPath = if plugin.dir != null
+        then "${plugin.src}/${plugin.dir}"
+        else "${plugin.src}";
 
-        iceStr = if plugin.ice != "" then "zinit ice ${plugin.ice}" else "";
-      in
-        ''
-          ${iceStr}
-          zinit ${loadType} ${target}
-        '';
+      target = if isLocal then localPath
+        else if plugin.snippet != null then plugin.snippet
+        else plugin.name;
+
+      loadType = if plugin.snippet != null then "snippet" else "light";
+
+      nixIce = if isLocal then " id-as'${plugin.name}' run-atpull" else "";
+      finalIce = if plugin.ice != "" || nixIce != ""
+        then "zinit ice ${plugin.ice}${nixIce}"
+        else "";
+    in
+    ''
+      ${finalIce}
+      zinit ${loadType} "${target}"
+    '';
 
   lazyExecStr = command:
+    let
+      id = "lazy-" + (builtins.hashString "sha256" command);
+    in
     ''
-      zinit ice wait"0" lucid as"program" from"gh-r" \
-        atload'eval "$(${command})"'
-      zinit light ajeetdsouza/zoxide
+      zinit ice wait"0" lucid id-as"${id}" atload'eval "$(${command})"'
+      zinit snippet /dev/null
     '';
 in
 {
@@ -30,28 +40,34 @@ in
     package = lib.mkPackageOption pkgs "zinit" { nullable = true; };
 
     plugins = lib.mkOption {
-      type = lib.types.listOf (lib.types.coercedTo 
-        lib.types.str 
-        (plugin: { name = plugin; }) 
-        (lib.types.submodule {
-          options = {
-            name = lib.mkOption {
-              type = lib.types.str;
-              description = "The plugin name (e.g., zsh-users/zsh-autosuggestions).";
-            };
-            ice = lib.mkOption {
-              type = lib.types.str;
-              default = "";
-              description = "Zinit ice modifiers (e.g., wait'0a' lucid).";
-            };
-            snippet = lib.mkOption {
-              type = lib.types.nullOr lib.types.str;
-              default = null;
-              description = "URL for a single file snippet (instead of a plugin).";
-            };
+      type = with lib.types; listOf (submodule {
+        options = {
+          name = lib.mkOption {
+            type = str;
+            description = "The plugin name (e.g., zsh-users/zsh-autosuggestions).";
           };
-        })
-      );
+          src = lib.mkOption {
+            type = nullOr path;
+            default = null;
+            description = "Path to the plugin source (usually fetched via pkgs.fetchFromGitHub).";
+          };
+          dir = lib.mkOption {
+            type = nullOr str;
+            default = null;
+            description = "Sub-directory within the source (useful for pkgs.* which use share/)";
+          };
+          ice = lib.mkOption {
+            type = str;
+            default = "";
+            description = "Zinit ice modifiers.";
+          };
+          snippet = lib.mkOption {
+            type = nullOr str;
+            default = null;
+            description = "URL (or local path) for a snippet.";
+          };
+        };
+      });
       default = [ ];
       description = "List of zinit plugins.";
     };
@@ -68,8 +84,10 @@ in
       typeset -gA ZINIT
       ZINIT[COMPLETIONS_DIR]="${config.xdg.cacheHome}/zinit/completions"
       source ${cfg.package}/share/zinit/zinit.zsh
+
       ${lib.concatMapStringsSep "\n" zinitPluginStr cfg.plugins}
       ${lib.concatMapStringsSep "\n" lazyExecStr cfg.lazyCmd}
+
       zinit cdreplay -q
     '';
   };

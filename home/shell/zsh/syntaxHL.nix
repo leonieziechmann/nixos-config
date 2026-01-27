@@ -1,7 +1,5 @@
 { config, lib, pkgs, ... }: {
-  imports = [
-    ./zinit.nix
-  ];
+  imports = [ ./zinit.nix ];
 
   options = {
     zsh.syntaxHighlighting = lib.mkEnableOption "highlight zsh prompt";
@@ -11,7 +9,9 @@
     programs.zsh = {
       zinit.plugins = [
         {
-          name = "zsh-users/zsh-syntax-highlighting";
+          name = "zsh-syntax-highlighting";
+          src = pkgs.zsh-syntax-highlighting;
+          dir = "zsh-syntax-highlighting";
           ice = "wait'0' lucid atpull'zinit creinstall -q'";
         }
       ];
@@ -21,7 +21,7 @@
       '';
     };
 
-    home.file."./zsh/catppuccin-syntax-hl-mocha.zsh".source = 
+    home.file."./zsh/catppuccin-syntax-hl-mocha.zsh".source =
       pkgs.fetchFromGitHub {
         owner = "catppuccin";
         repo = "zsh-syntax-highlighting";

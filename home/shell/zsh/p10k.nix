@@ -1,4 +1,4 @@
-{ config, lib, ... }: {
+{ config, lib, pkgs, ... }: {
   imports = [ ./zinit.nix ];
 
   options = {
@@ -11,7 +11,9 @@
       programs.zsh = {
         zinit.plugins = [
           {
-            name = "romkatv/powerlevel10k";
+            name = "powerlevel10k";
+            src = pkgs.zsh-powerlevel10k;
+            dir = "share/zsh-powerlevel10k";
             ice = "depth=1";
           }
         ];

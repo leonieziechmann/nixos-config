@@ -1,4 +1,4 @@
-{ config, lib, ... }: {
+{ config, lib, pkgs, ... }: {
   imports = [ ./zinit.nix ];
 
   options = {
@@ -11,7 +11,9 @@
     programs.zsh = {
       zinit.plugins = [
         {
-          name = "Aloxaf/fzf-tab";
+          name = "zsh-fzf-tab";
+          src = pkgs.zsh-fzf-tab;
+          dir = "share/zsh-fzf-tab";
           ice = "wait'0' lucid atpull'zinit creinstall -q'";
         }
       ];
