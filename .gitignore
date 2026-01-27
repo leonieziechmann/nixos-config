@@ -1,0 +1,6 @@
+# Direnv
+.direnv/
+.local/
+
+# Pre Commit Hook
+.pre-commit-config.yaml

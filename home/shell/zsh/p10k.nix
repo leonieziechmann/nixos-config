@@ -1,12 +1,17 @@
-{ config, lib, pkgs, ... }: {
-  imports = [ ./zinit.nix ];
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: {
+  imports = [./zinit.nix];
 
   options = {
     zsh.enableP10k = lib.mkEnableOption "use the p10k zsh theme";
     zsh.p10kInstantPrompt = lib.mkEnableOption "instant prompt";
   };
 
-  config = lib.mkMerge [ 
+  config = lib.mkMerge [
     (lib.mkIf config.zsh.enableP10k {
       programs.zsh = {
         zinit.plugins = [

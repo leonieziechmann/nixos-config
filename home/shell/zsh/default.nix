@@ -1,4 +1,4 @@
-{ lib, pkgs, config, ... }: {
+{lib, ...}: {
   imports = [
     ./zinit.nix
     ./p10k.nix
@@ -9,12 +9,14 @@
     ./zoxide.nix
   ];
 
-  zsh.enableP10k = lib.mkDefault true;
-  zsh.p10kInstantPrompt = lib.mkDefault true;
-  zsh.fzf-tab = lib.mkDefault true;
-  zsh.completions = lib.mkDefault true;
-  zsh.leanHistory = lib.mkDefault true;
-  zsh.syntaxHighlighting = lib.mkDefault true;
+  zsh = {
+    enableP10k = lib.mkDefault true;
+    p10kInstantPrompt = lib.mkDefault true;
+    fzf-tab = lib.mkDefault true;
+    completions = lib.mkDefault true;
+    leanHistory = lib.mkDefault true;
+    syntaxHighlighting = lib.mkDefault true;
+  };
 
   programs.zsh = {
     enable = true;

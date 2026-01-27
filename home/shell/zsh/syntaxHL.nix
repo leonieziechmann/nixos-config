@@ -1,5 +1,10 @@
-{ config, lib, pkgs, ... }: {
-  imports = [ ./zinit.nix ];
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: {
+  imports = [./zinit.nix];
 
   options = {
     zsh.syntaxHighlighting = lib.mkEnableOption "highlight zsh prompt";
@@ -27,6 +32,7 @@
         repo = "zsh-syntax-highlighting";
         rev = "dbb1ec9";
         sha256 = "sha256-0B7g0J6+ZCoe1eErsSEmqO0aNOBi+FB+///vXnuiels";
-      } + "/themes/catppuccin_mocha-zsh-syntax-highlighting.zsh";
+      }
+      + "/themes/catppuccin_mocha-zsh-syntax-highlighting.zsh";
   };
 }

@@ -1,10 +1,9 @@
-{ config, lib, pkgs, ... }:
-{
+{...}: {
   imports = [
     ./themes.nix
   ];
 
-  home.shellAliases = { 
+  home.shellAliases = {
     tmux-reload = "tmux source ~/.config/tmux/tmux.conf";
   };
 
@@ -17,7 +16,6 @@
 
     keyMode = "vi";
 
-    plugins = with pkgs; [
-    ];
+    plugins = [];
   };
 }

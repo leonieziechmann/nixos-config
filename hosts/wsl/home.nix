@@ -6,7 +6,7 @@
   ...
 }: {
   # You can import other home-manager modules here
-  imports = [ outputs.homeModules.default ];
+  imports = [outputs.homeModules.default];
 
   home = {
     username = "xayah";

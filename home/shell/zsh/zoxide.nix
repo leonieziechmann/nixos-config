@@ -1,5 +1,5 @@
-{ pkgs, ... }: {
-  imports = [ ./zinit.nix ];
+{pkgs, ...}: {
+  imports = [./zinit.nix];
 
   programs.zoxide.enable = true;
   programs.zsh.zinit.lazyCmd = [

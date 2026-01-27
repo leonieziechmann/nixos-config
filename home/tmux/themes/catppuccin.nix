@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }: {
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: {
   options = {
     tmux-theme.catppuccin = lib.mkEnableOption "catppuccin theme";
   };

@@ -1,8 +1,9 @@
-{ config, lib, pkgs, ... }: 
-
-with lib;
-
 {
+  config,
+  lib,
+  ...
+}:
+with lib; {
   imports = [
     ./themes/catppuccin.nix
     ./themes/rose-pine.nix
@@ -18,5 +19,3 @@ with lib;
     })
   ];
 }
-
-

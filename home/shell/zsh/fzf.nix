@@ -1,5 +1,10 @@
-{ config, lib, pkgs, ... }: {
-  imports = [ ./zinit.nix ];
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: {
+  imports = [./zinit.nix];
 
   options = {
     zsh.fzf-tab = lib.mkEnableOption "fzf tab extension";

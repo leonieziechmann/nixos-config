@@ -1,8 +1,10 @@
-{ config, lib, pkgs, ... }:
-
-with lib;
-
 {
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+with lib; {
   imports = [
     ./themes/catppuccin.nix
     ./themes/rose-pine.nix
@@ -20,7 +22,7 @@ with lib;
     {
       gtk.enable = true;
 
-      home.packages = [ pkgs.gnome-tweaks ];
+      home.packages = [pkgs.gnome-tweaks];
     }
   ];
 }

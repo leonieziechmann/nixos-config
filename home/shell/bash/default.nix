@@ -1,7 +1,3 @@
-{
-	...
-}: {
-	programs.bash = {
-		enable = true;
-	};
+_: {
+  programs.bash.enable = true;
 }

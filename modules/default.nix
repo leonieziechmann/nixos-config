@@ -1,7 +1,7 @@
-{ ... }: {
-	imports = [
-		./general-desktop.nix
-		./docker.nix
-		./shell.nix
-	];
+{...}: {
+  imports = [
+    ./general-desktop.nix
+    ./docker.nix
+    ./shell.nix
+  ];
 }

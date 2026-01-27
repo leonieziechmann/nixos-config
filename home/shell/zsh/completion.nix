@@ -1,5 +1,10 @@
-{ config, lib, pkgs, ... }: {
-  imports = [ ./zinit.nix ];
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: {
+  imports = [./zinit.nix];
 
   options = {
     zsh.completions = lib.mkEnableOption "better zsh completions";
@@ -25,7 +30,7 @@
 
       initExtra = ''
         autoload -Uz compinit
-        if [[ -n ${ZDOTDIR:-$HOME}/.zcompdump(#qN.m-1) ]]; then
+        if [[ -n ''${ZDOTDIR:-$HOME}/.zcompdump(#qN.m-1) ]]; then
           compinit -C
         else
           compinit

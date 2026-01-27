@@ -1,15 +1,8 @@
-# Edit this configuration file to define what should be installed on
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
-
-{ pkgs, inputs, ... }:
-
-{
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-      ../../modules
-    ];
+{pkgs, ...}: {
+  imports = [
+    ./hardware-configuration.nix
+    ../../modules
+  ];
 
   # Bootloader.
   boot = {
@@ -22,17 +15,15 @@
   # Enable networking
   networking.networkmanager.enable = true;
 
-  # Enable the X11 windowing system.
-  services.xserver.enable = true;
+  services = {
+    xserver = {
+      enable = true;
+      displayManager.gdm.enable = true;
+      desktopManager.gnome.enable = true;
 
-  # Enable the GNOME Desktop Environment.
-  services.xserver.displayManager.gdm.enable = true;
-  services.xserver.desktopManager.gnome.enable = true;
-
-  # Configure keymap in X11
-  services.xserver = {
-    xkb.layout = "us";
-    xkb.variant = "";
+      xkb.layout = "us";
+      xkb.variant = "";
+    };
   };
 
   nixpkgs.config.allowUnfree = true;
@@ -41,11 +32,9 @@
   users.users.xayah = {
     isNormalUser = true;
     description = "xayah";
-    extraGroups = [ "networkmanager" "wheel" "docker" ];
+    extraGroups = ["networkmanager" "wheel" "docker"];
     shell = pkgs.zsh;
-    packages = with pkgs; [
-    #  thunderbird
-    ];
+    packages = [];
   };
 
   # Packages and programs
@@ -57,22 +46,22 @@
     winePackages.fonts
     winePackages.stableFull
     (lutris.override {
-      extraPkgs = pkgs: [
+      extraPkgs = _: [
       ];
     })
   ];
 
-  programs.firefox.enable = true;
-  programs.zsh.enable = true;
+  programs = {
+    firefox.enable = true;
+    zsh.enable = true;
+  };
 
-
-  # NIXOS experimental
   nix.settings.experimental-features = [
     "nix-command"
     "flakes"
   ];
 
-  system.stateVersion = "24.05"; # Did you read the comment?
+  system.stateVersion = "24.05";
 
   # Gaming settings
   hardware.opengl = {
@@ -81,7 +70,7 @@
     driSupport32Bit = true;
   };
 
-  services.xserver.videoDrivers = [ "amdgpu" ];
+  services.xserver.videoDrivers = ["amdgpu"];
 
   programs.steam = {
     enable = true;

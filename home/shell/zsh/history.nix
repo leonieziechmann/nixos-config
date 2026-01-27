@@ -1,4 +1,8 @@
-{ config, lib, ... }: {
+{
+  config,
+  lib,
+  ...
+}: {
   options = {
     zsh.leanHistory = lib.mkEnableOption "zsh history without dups";
   };
@@ -15,7 +19,7 @@
       };
 
       initExtra = ''
-        setopt appendhistory 
+        setopt appendhistory
         setopt hist_save_no_dups
         setopt hist_find_no_dups
       '';

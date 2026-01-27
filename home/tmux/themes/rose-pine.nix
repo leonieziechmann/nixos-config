@@ -1,10 +1,15 @@
-{ config, pkgs, lib, ... }: {
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}: {
   options = {
     tmux-theme.rose-pine = lib.mkEnableOption "rose-pine theme";
   };
 
   config = lib.mkIf config.tmux-theme.rose-pine {
-    programs.tmux.plugins = [ 
+    programs.tmux.plugins = [
       {
         plugin = pkgs.tmuxPlugins.rose-pine;
         extraConfig = ''

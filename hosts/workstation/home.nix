@@ -1,15 +1,9 @@
-# This is your home-manager configuration file
-# Use this to configure your home environment (it replaces ~/.config/nixpkgs/home.nix)
 {
-  inputs,
-  lib,
-  config,
   outputs,
   pkgs,
   ...
 }: {
-  # You can import other home-manager modules here
-  imports = [ outputs.homeModules.default ];
+  imports = [outputs.homeModules.default];
 
   home = {
     username = "xayah";
@@ -18,18 +12,17 @@
   };
 
   nixpkgs = {
-    # You can add overlays here
     overlays = [];
-    # Configure your nixpkgs instance
     config = {
       allowUnfree = true;
       allowUnfreePredicate = _: true;
     };
   };
 
-  # Enable home-manager and git
-  programs.home-manager.enable = true;
-  programs.git.enable = true;
+  programs = {
+    home-manager.enable = true;
+    git.enable = true;
+  };
 
   # Nicely reload system units when changing configs
   systemd.user.startServices = "sd-switch";
@@ -46,6 +39,6 @@
     steam
     krita
     musescore
-		gnumake
+    gnumake
   ];
 }

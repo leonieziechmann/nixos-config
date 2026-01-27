@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{pkgs, ...}: {
   programs.neovim = {
     enable = true;
     defaultEditor = true;
@@ -12,12 +12,12 @@
       unzip
       gnumake
 
-      # Requirements for LSPs 
+      # Requirements for LSPs
       cargo
       rustc
-      gcc 
+      gcc
 
-      # Utilities 
+      # Utilities
       xclip
     ];
   };

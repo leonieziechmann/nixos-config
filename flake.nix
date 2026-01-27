@@ -1,92 +1,97 @@
 {
-	description = "Your new nix config";
+  description = "Your new nix config";
 
-	inputs = {
-		# Nixpkgs
-		nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
-		unstable.url = "github:nixos/nixpkgs/nixos-unstable";
+  inputs = {
+    # Nixpkgs
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
+    unstable.url = "github:nixos/nixpkgs/nixos-unstable";
 
-		# Home manager
-		home-manager = {
-			url = "github:nix-community/home-manager/release-24.11";
-			inputs.nixpkgs.follows = "nixpkgs";
-		};
+    # Home manager
+    home-manager = {
+      url = "github:nix-community/home-manager/release-24.11";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
-		# WSL
-		nixos-wsl.url = "github:nix-community/NixOS-WSL/main";
+    # WSL
+    nixos-wsl.url = "github:nix-community/NixOS-WSL/main";
 
-		nur = {
-			url = "github:nix-community/nur";
-		};
+    nur.url = "github:nix-community/nur";
+    pre-commit-hooks.url = "github:cachix/pre-commit-hooks.nix";
+  };
 
-		firefox-addons = {
-			url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
-			inputs.nixpkgs.follows = "nixpkgs";
-		};
-	};
+  outputs = {
+    self,
+    nixpkgs,
+    home-manager,
+    nixos-wsl,
+    pre-commit-hooks,
+    ...
+  } @ inputs: let
+    inherit (self) outputs;
+    system = "x86_64-linux";
+    pkgs = nixpkgs.legacyPackages.${system};
+    unstable = import inputs.unstable {
+      inherit system;
+      config.allowUnfree = true;
+      config.allowUnfreePredicate = _: true;
+    };
+  in {
+    checks.${system}.pre-commit-check = pre-commit-hooks.lib.${system}.run {
+      src = ./.;
+      hooks = {
+        alejandra.enable = true;
+        deadnix.enable = true;
+        statix.enable = true;
+      };
+    };
 
-	outputs = {
-		self,
-		nixpkgs,
-		home-manager,
-		nixos-wsl,
-		...
-	} @ inputs: let
-		inherit (self) outputs;
-		unstable = import inputs.unstable {
-			system = "x86_64-linux";
-			config.allowUnfree = true;
-			config.allowUnfreePredicate = _ : true;
-		};
-	in {
-		# NixOS configuration entrypoint
-		# Available through 'nixos-rebuild --flake .#your-hostname'
-		nixosConfigurations = {
+    devShells.${system}.default = pkgs.mkShell {
+      inherit (self.checks.${system}.pre-commit-check) shellHook;
+      buildInputs = self.checks.${system}.pre-commit-check.enabledPackages;
+    };
 
-			nixos = nixpkgs.lib.nixosSystem {
-				specialArgs = {
-					inherit inputs outputs;
-					unstable = unstable;
-				};
-				# > Our main nixos configuration file <
-				modules = [./hosts/workstation/configuration.nix];
-			};
+    # NixOS configuration entrypoint
+    # Available through 'nixos-rebuild --flake .#your-hostname'
+    nixosConfigurations = {
+      nixos = nixpkgs.lib.nixosSystem {
+        specialArgs = {
+          inherit inputs outputs unstable;
+        };
+        # > Our main nixos configuration file <
+        modules = [./hosts/workstation/configuration.nix];
+      };
 
-			wsl = nixpkgs.lib.nixosSystem {
-				specialArgs = {
-					inherit inputs outputs;
-					unstable = unstable;
-					nixos-wsl = nixos-wsl;
-				};
-				modules = [
-					./hosts/wsl/configuration.nix
-				];
-			};
-		};
+      wsl = nixpkgs.lib.nixosSystem {
+        specialArgs = {
+          inherit inputs outputs unstable nixos-wsl;
+        };
+        modules = [
+          ./hosts/wsl/configuration.nix
+        ];
+      };
+    };
 
-		# Standalone home-manager configuration entrypoint
-		# Available through 'home-manager --flake .#your-username@your-hostname'
-		homeConfigurations = {
-			"xayah@nixos" = home-manager.lib.homeManagerConfiguration {
-				pkgs = nixpkgs.legacyPackages.x86_64-linux;
-					extraSpecialArgs = {
-						inherit inputs outputs;
-						unstable = unstable;
-					};
-				modules = [ ./hosts/workstation/home.nix ];
-			};
+    # Standalone home-manager configuration entrypoint
+    # Available through 'home-manager --flake .#your-username@your-hostname'
+    homeConfigurations = {
+      "xayah@nixos" = home-manager.lib.homeManagerConfiguration {
+        pkgs = nixpkgs.legacyPackages.x86_64-linux;
+        extraSpecialArgs = {
+          inherit inputs outputs unstable;
+        };
+        modules = [./hosts/workstation/home.nix];
+      };
 
-			"xayah@wsl" = home-manager.lib.homeManagerConfiguration {
-				pkgs = nixpkgs.legacyPackages.x86_64-linux;
-					extraSpecialArgs = {
-						inherit inputs outputs;
-						unstable = unstable;
-					};
-				modules = [ ./hosts/wsl/home.nix ];
-			};
-		};
+      "xayah@wsl" = home-manager.lib.homeManagerConfiguration {
+        pkgs = nixpkgs.legacyPackages.x86_64-linux;
+        extraSpecialArgs = {
+          inherit inputs outputs unstable;
+        };
+        modules = [./hosts/wsl/home.nix];
+      };
+    };
 
-		homeModules.default = ./home;
-		nixModules.default = ./modules;
-	};
+    homeModules.default = ./home;
+    nixModules.default = ./modules;
+  };
 }
