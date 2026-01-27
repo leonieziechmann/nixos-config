@@ -1,11 +1,8 @@
-# This is your home-manager configuration file
-# Use this to configure your home environment (it replaces ~/.config/nixpkgs/home.nix)
 {
   inputs,
   pkgs,
   ...
 }: {
-  # You can import other home-manager modules here
   imports = [
     ./theme.nix
     ./nvim.nix
@@ -15,11 +12,9 @@
     ./tmux
     ./gtk
     ./lf
-    ./firefox.nix
-		./typsetting
+    ./typesetting
   ];
 
-  # Allowing unfree nur
   nixpkgs = {
     overlays = [ inputs.nur.overlays.default ];
     config.allowUnfree = true;
@@ -30,6 +25,6 @@
   home.packages = with pkgs; [
     darktable
     signal-desktop
-		jq
+    jq
   ];
 }
